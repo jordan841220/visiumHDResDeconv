@@ -1,5 +1,15 @@
 # visiumHDResDeconv
-This package focuses on **resolution‐level deconvolution** of Visium HD spatial transcriptomics data. It provides two main approaches for identifying high‐resolution spots to discard based on low‐resolution information. The first method (barcode‐based deconvolution) uses the original barcode IDs to generate a list of high‐resolution barcodes covering each low‐resolution spot. The second method (coordinate‐based deconvolution) relies on spatial coordinates and pixel dimensions to find all high‐resolution spots that fall within the same physical area as each low‐resolution spot. In addition, the package offers visualization helpers to overlay spot QC metrics and to compare results from both deconvolution methods using Venn diagrams and spatial QC plots. The plot_spatial_qc function is a modified version of the implementation in the SpotSweeper R package (special thanks to the SpotSweeper authors, https://github.com/MicTott/SpotSweeper). Finally, there is a convenience function to compute agreement scores between the two methods and to generate summary plots of the lowest‐agreement cases.
+This package is designed for users who wish to perform quality control at lower resolution and then “map” QC results back to high resolution, because applying standard QC directly on high-resolution Visium HD data can be problematic: each high-res spot often has very few UMIs, leading to extreme local variance. 
+
+<br>
+<br>
+
+It provides two complementary methods for identifying high-resolution spots to discard based on low-resolution QC. The first method—barcode-based deconvolution—uses each low-resolution barcode to generate all corresponding high-resolution barcodes that cover the same physical area. The second method—coordinate-based deconvolution—relies on spatial coordinates and pixel dimensions (from JSON and Parquet files) to find every high-resolution spot that falls within each low-resolution spot’s bounding box. 
+
+<br>
+<br>
+
+In addition, the package offers visualization helpers: a modified version of SpotSweeper’s QC-plot routine (many thanks to the SpotSweeper authors) for overlaying spot‐level QC metrics on the tissue image, and a comparison function that draws Venn diagrams and spatial QC overlays to illustrate differences between the two deconvolution approaches. Finally, there is a convenience function to compute agreement scores between the barcode-based and coordinate-based methods, along with summary plots highlighting the lowest-agreement cases.
 
 # DEPENDENCIES
 The package imports the following R packages:
@@ -25,6 +35,8 @@ devtools::install_github("jordan841220/visiumHDResDeconv")
 
 
 # EXAMPLE
+Following workflow demonstrates how I perform usual QC pipeline on low resolution data, and then deconvolve "bad spots" to higher resolution data.
+
 ```
 # Library
 library(SpotSweeper)
