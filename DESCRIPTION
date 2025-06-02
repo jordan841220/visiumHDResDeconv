@@ -1,0 +1,25 @@
+Package: visiumHDResDeconv
+Type: Package
+Title: A tool used to deconvolve Visium HD data from low resolution to high resolution
+Version: 0.1.0
+Authors@R: 
+    person(given = "Chun-Ting", 
+           family = "Lin", 
+           email = "jordan841220@gmail.com", 
+           role = c("aut", "cre"))
+Description: We provide “barcode-based” and “coordinate-based” methods to perform Visium HD deconvolution
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    dplyr,
+    tidyr,
+    stringr,
+    jsonlite,
+    arrow,
+    escheR,
+    ggplot2,
+    ggvenn,
+    escheR,
+    magrittr
+RoxygenNote: 7.3.2
