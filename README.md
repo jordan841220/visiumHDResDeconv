@@ -38,8 +38,9 @@ devtools::install_github("jordan841220/visiumHDResDeconv")
 ```
 
 # INPUTS
-- parquet file output by spaceranger v3.1.3
-- JSON file output by spaceranger v3.1.3
+- 10X Genomics Visium HD data (SpatialExperiment object)
+- tissue_positions.parquet
+- scalefactors_json.json
 
 
 # EXAMPLE
@@ -54,11 +55,10 @@ library(jsonlite)
 library(SpatialExperiment)
 library(ggplot2)
 library(dplyr)
-
 options(future.globals.maxSize = 1e9)
 ```
 
-### Easy preprocess - you can apply SpotSweeper QC pipeline here
+### Data loading
 ```
 # Load your 64um SpatialExperiment object "spe_64um"
 # identifying the mitochondrial transcripts
@@ -71,8 +71,8 @@ spe_64um <- spe_64um[, keep]
 # Load your 8um SpatialExperiment object "spe_8um"
 # ...same as above
 ```
-
-### For example, if I want to exclude "poor spots" in 64um which qc_lib_size are < 50
+### Easy preprocess
+You can apply SpotSweeper QC pipeline here. For example, if I want to exclude "poor spots" in 64um which qc_lib_size are < 50
 ```
 qc_lib_size <- colData(spe_64um)$sum < 50
 # add QC results to colData
@@ -122,7 +122,7 @@ The resulting distribution plot lets you assess overall agreement between the tw
 
 
 
-### Compare between two deconvolved methods
+### Compare quality between two deconvolved methods
 ```
 compare_deconvolved_methods(m1 = m1, m2 = m2, spe_high_res = spe_8um)
 ```
@@ -131,7 +131,7 @@ compare_deconvolved_methods(m1 = m1, m2 = m2, spe_high_res = spe_8um)
 ![High‐resolution spot QC example3](man/figures/compare_deconvolved_methods_example2.png)
 
 
-The compare_deconvolved_methods() function displays which barcodes each method identified (using a Venn diagram) and overlays those spots on the tissue image to visualize where each set of barcodes lies.
+The compare_deconvolved_methods() function displays which barcodes each method identified (using a Venn diagram) and overlays those spots on the tissue image to visualize where each set of barcodes actually lies.
 
 
 # AUTHOR
