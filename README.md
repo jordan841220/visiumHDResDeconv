@@ -1,8 +1,11 @@
 # visiumHDResDeconv
+
+## PURPOSE
 This package is designed for users who wish to **perform quality control at lower resolution and then “map” QC results back to high resolution**, because applying standard QC directly on high-resolution Visium HD data can be problematic: each high-res spot often has very few UMIs, leading to extreme local variance. 
 
 <br>
 
+## METHODS
 It provides two complementary methods for identifying high-resolution spots to discard based on low-resolution QC:
 - barcode-based deconvolution: uses each low-resolution barcode to generate all corresponding high-resolution barcodes that cover the same physical area.
 - coordinate-based deconvolution: relies on spatial coordinates and pixel dimensions (from JSON and Parquet files) to find every high-resolution spot that falls within each low-resolution spot’s bounding box. 
@@ -13,7 +16,8 @@ In addition, the package offers visualization helpers: a modified version of Spo
 
 <br>
 
-However, in practice each method alone may fail to identify all problematic high-resolution spots. Therefore, we recommend taking the **union** of the barcodes identified by both approaches - these barcodes represent the spots to consider filtering in the high-resolution dataset.
+## NOTES
+However, in practice each method alone may fail to identify all problematic high-resolution spots. Therefore, we recommend taking the **union** of the barcodes identified by both approaches - these barcodes represent the spots to consider filtering in the high-resolution dataset. Furthermore, since the structure of output and format matters, we recommend using the output of spaceranger v3.1.3.
 
 # DEPENDENCIES
 The package imports the following R packages:
@@ -34,15 +38,16 @@ devtools::install_github("jordan841220/visiumHDResDeconv")
 ```
 
 # INPUTS
-- parquet file output by spaceranger
-- JSON file output by spaceranger
+- parquet file output by spaceranger v3.1.3
+- JSON file output by spaceranger v3.1.3
 
 
 # EXAMPLE
 Following workflow demonstrates how I perform usual QC pipeline on low resolution data, and then deconvolve "bad spots" to higher resolution data.
 
+### Library
 ```
-# Library
+Library
 library(SpotSweeper)
 library(escheR)
 library(jsonlite)
@@ -51,10 +56,10 @@ library(ggplot2)
 library(dplyr)
 
 options(future.globals.maxSize = 1e9)
+```
 
-#########################
-#### Easy preprocess ####
-#########################
+### Easy preprocess - you can apply SpotSweeper QC pipeline here
+```
 # Load your 64um SpatialExperiment object "spe_64um"
 # identifying the mitochondrial transcripts
 is.mito <- rownames(spe_64um)[grepl("^mt-|^MT-", rownames(spe_64um))]
@@ -65,23 +70,27 @@ spe_64um <- spe_64um[, keep]
 
 # Load your 8um SpatialExperiment object "spe_8um"
 # ...same as above
+```
 
-#######################################################################
-#### If I want to exclude bad_spots in 64um which qc_lib_size < 50 ####
-#######################################################################
+### For example, if I want to exclude "poor spots" in 64um which qc_lib_size are < 50
+```
 qc_lib_size <- colData(spe_64um)$sum < 50
 # add QC results to colData
 spe_64um$qc_lib_size <- qc_lib_size
 spe_64um$global_outliers <- as.logical(qc_lib_size) 
+```
 
-#################################################
-#### Transfer barcodes to pseudo-coordinates ####
-#################################################
+### Transfer barcodes to "pseudo coordination""
+```
 bad_spots <- barcodes_to_pseudo_coordinates(colData(spe_64um)$barcode[spe_64um$global_outliers])
+```
+barcodes_to_pseudo_coordinates() function will output a dataframe with 3 columns as below. Notes that the format of barcodes have to be similar to "s_064um_00011_00001-1".
 
-####################
-#### Deconvolve ####
-####################
+![High‐resolution spot QC example](man/figures/barcodes_to_pseudo_coordinates_example.png)
+
+
+### Deconvolve
+```
 m1 <- barcode_based_deconvolve(bad_spots$barcodes, low_res = 64, high_res = 8)
 m2 <- coordinate_based_deconvolve(bad_spots$barcodes, 
                                  parquet_low_res = "/path/to/64um/tissue_positions.parquet",
@@ -89,22 +98,40 @@ m2 <- coordinate_based_deconvolve(bad_spots$barcodes,
                                  json_low_res = "/path/to/64um/scalefactors_json.json",
                                  low_res = 64, 
                                  high_res = 8)
+```
+Here m1/m2 are 2 list of barcodes.
 
-###########################################
-#### Estimate the effect of deconvolve ####
-###########################################
+
+### Estimate the effect of deconvolve
+- The INPUT is a dataframe with "barcodes" column
+```
 bad_spots <- estimate_deconvolved_scores(bad_spots, 
                                  parquet_low_res = "/path/to/64um/tissue_positions.parquet",
                                  parquet_high_res = "/path/to/8um/tissue_positions.parquet",
                                  json_low_res = "/path/to/64um/scalefactors_json.json",
                                  low_res = 64, 
                                  high_res = 8)
+```
+The estimate_deconvolved_scores() function calculates a score between 0 and 1 for each low‐resolution barcode—measuring agreement between the two deconvolution methods. It then generates a density plot of all scores and displays the spatial locations of the 10 lowest‐scoring (worst) deconvolution events.
 
-#################################################
-#### compare between two deconvolved methods ####
-#################################################
+![High‐resolution spot QC example2](man/figures/estimate_deconvolved_scores_example1.png)
+
+![High‐resolution spot QC example3](man/figures/estimate_deconvolved_scores_example2.png)
+
+The resulting distribution plot lets you assess overall agreement between the two methods: a score of 1 indicates perfect concordance, while 0 indicates no overlap at all.
+
+
+
+### Compare between two deconvolved methods
+```
 compare_deconvolved_methods(m1 = m1, m2 = m2, spe_high_res = spe_8um)
 ```
+![High‐resolution spot QC example3](man/figures/compare_deconvolved_methods_example1.png)
+
+![High‐resolution spot QC example3](man/figures/compare_deconvolved_methods_example2.png)
+
+
+The compare_deconvolved_methods() function displays which barcodes each method identified (using a Venn diagram) and overlays those spots on the tissue image to visualize where each set of barcodes lies.
 
 
 # AUTHOR
