@@ -132,7 +132,7 @@ The compare_deconvolved_methods() function displays which barcodes each method i
 <br>
 
 The "poor spots" highlighted by SpotSweeper on 64um resolution:
-![High‐resolution spot QC example5](man/figures/compare_deconvolved_methods_example2.png)
+![High‐resolution spot QC example5new](man/figures/compare_deconvolved_methods_example2.png)
 
 After we deconvolve them to 8um resolution:
 ![High‐resolution spot QC example6](man/figures/compare_deconvolved_methods_example3.png)
