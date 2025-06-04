@@ -126,12 +126,16 @@ The resulting distribution plot lets you assess overall agreement between the tw
 ```
 compare_deconvolved_methods(m1 = m1, m2 = m2, spe_high_res = spe_8um)
 ```
-![High‐resolution spot QC example3](man/figures/compare_deconvolved_methods_example1.png)
-
-![High‐resolution spot QC example3](man/figures/compare_deconvolved_methods_example2.png)
-
+![High‐resolution spot QC example4](man/figures/compare_deconvolved_methods_example1.png)
 
 The compare_deconvolved_methods() function displays which barcodes each method identified (using a Venn diagram) and overlays those spots on the tissue image to visualize where each set of barcodes actually lies.
+<br>
+
+The "poor spots" highlighted by SpotSweeper on 64um resolution:
+![High‐resolution spot QC example5](man/figures/compare_deconvolved_methods_example2.png)
+
+After we deconvolve them to 8um resolution:
+![High‐resolution spot QC example6](man/figures/compare_deconvolved_methods_example3.png)
 
 
 # AUTHOR
