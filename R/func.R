@@ -365,21 +365,22 @@ compare_deconvolved_methods <- function(m1, m2, spe_high_res) {
   s2 <- setdiff(m1, m2)
   s3 <- intersect(m1, m2)
 
-  spe_high_res$highlight_spots <- NA
-  spe_high_res$highlight_spots[which(colData(spe_high_res)$barcode %in% s1)] <- "barcode-based excluded"
-  spe_high_res$highlight_spots[which(colData(spe_high_res)$barcode %in% s2)] <- "coordinate-based excluded"
-  spe_high_res$highlight_spots[which(colData(spe_high_res)$barcode %in% s3)] <- "both"
+  spe_high_res$deconv_res <- NA
+  spe_high_res$deconv_res[which(colData(spe_high_res)$barcode %in% s1)] <- "barcode-based excluded"
+  spe_high_res$deconv_res[which(colData(spe_high_res)$barcode %in% s2)] <- "coordinate-based excluded"
+  spe_high_res$deconv_res[which(colData(spe_high_res)$barcode %in% s3)] <- "both"
 
   p_QC <-
     plot_spatial_qc(spe_high_res,
                     metric = "sum",
-                    outliers = "highlight_spots",
+                    outliers = "deconv_res",
                     point_size = 1,
                     stroke = 0.8) +
     ggtitle("Compare deconvolved results from both methods")
 
   print(p_venn)
   print(p_QC)
+  return(spe_high_res)
 }
 
 

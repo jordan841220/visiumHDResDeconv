@@ -124,7 +124,7 @@ The resulting distribution plot lets you assess overall agreement between the tw
 
 ### Compare quality between two deconvolved methods
 ```
-compare_deconvolved_methods(m1 = m1, m2 = m2, spe_high_res = spe_8um)
+spe_8um <- compare_deconvolved_methods(m1 = m1, m2 = m2, spe_high_res = spe_8um)
 ```
 ![High‐resolution spot QC example4](man/figures/compare_deconvolved_methods_example1.png)
 
@@ -136,6 +136,8 @@ The "poor spots" highlighted by SpotSweeper on 64um resolution:
 
 After we deconvolve them to 8um resolution:
 ![High‐resolution spot QC example6](man/figures/compare_deconvolved_methods_example3.png)
+
+The returned spe_8um will have a new colData named "deconv_res" which labels whether certain "poor barcode" is deconvolved by method 1, 2 or both (good barcodes will be labeled as NA).
 
 
 # AUTHOR
