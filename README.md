@@ -48,7 +48,6 @@ Following workflow demonstrates how I perform usual QC pipeline on low resolutio
 
 ### Library
 ```
-Library
 library(SpotSweeper)
 library(escheR)
 library(jsonlite)
